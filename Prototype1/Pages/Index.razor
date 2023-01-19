@@ -1,0 +1,40 @@
+﻿@page "/"
+
+<div class="d-flex flex-row flex-nowrap overflow-auto">
+    @foreach(var item in _daftarBarang)
+    {
+        <RadzenCard Class="m-3" Style="max-width: 7.5rem!important; max-height:12.5rem !important; margin-right: -0.7rem !important;">
+            <div class="d-flex flex-row p-3">
+                    <RadzenImage Path="@item.Gambar" Style="width: 7.4rem !important; margin-left: -2.2rem !important; margin-top: -2.2rem !important; border-radius: 0.2rem !important; margin-bottom: -2rem;" />
+            </div>
+            <RadzenCard Class="rz-shadow-0 rz-border-radius-0" style="margin: 0 -1.3rem !important; padding: 0.9rem !important;">
+                <RadzenText TextStyle="TextStyle.Caption">@item.NamaBarang</RadzenText>
+                <div class="row">
+                    <div class="col-md-12">
+                        <RadzenText TextStyle="TextStyle.Body2"><b>@String.Format(new System.Globalization.CultureInfo("id-ID"), "{0:C}", item?.HargaBarang)</b></RadzenText>
+                        <RadzenText TextStyle="TextStyle.Caption">@item.Divisi</RadzenText>
+                    </div>
+                </div>
+            </RadzenCard>
+        </RadzenCard>
+    }
+</div>
+
+@code {
+    private List<Barang> _daftarBarang = new();
+    protected override async Task OnInitializedAsync()
+    {
+        _daftarBarang.Add(new Barang { NamaBarang = "Samsung Note 10", Divisi = "Samsung", HargaBarang = 15000000, Gambar = "https://www.shutterstock.com/image-photo/bangkok-thailand-samsung-launch-new-600w-1793769595.jpg" });
+        _daftarBarang.Add(new Barang { NamaBarang = "Samsung Galaxy S9", Divisi = "Samsung", HargaBarang = 14000000, Gambar = "https://www.shutterstock.com/image-photo/moscow-russia-march-2-2018-600w-1046514499.jpg" });
+        _daftarBarang.Add(new Barang { NamaBarang = "Laptop HP Pavilion", Divisi = "HP", HargaBarang = 20000000, Gambar = "https://www.shutterstock.com/image-photo/bangkok-thailand-hp-launch-new-600w-2126914541.jpg" });
+        //_daftarBarang.Add(new Barang { NamaBarang = "Macbook XYZ", Divisi = "Apple", HargaBarang = 25000000 });
+    }
+
+    public class Barang
+    {
+        public string NamaBarang { get; set; }
+        public int HargaBarang { get; set; }
+        public string Divisi { get; set; }
+        public string Gambar { get; set; }
+    }
+}
