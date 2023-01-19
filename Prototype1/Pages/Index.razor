@@ -1,6 +1,6 @@
 ﻿@page "/"
 
-<div class="d-flex flex-row flex-nowrap overflow-auto">
+<div class="d-flex flex-row flex-nowrap overflow-auto" style="margin-left:0vh;">
     @foreach(var item in _daftarBarang)
     {
         <RadzenCard Class="m-3" Style="max-width: 7.5rem!important; max-height:12.5rem !important; margin-right: -0.7rem !important;">
@@ -27,7 +27,7 @@
         _daftarBarang.Add(new Barang { NamaBarang = "Samsung Note 10", Divisi = "Samsung", HargaBarang = 15000000, Gambar = "https://www.shutterstock.com/image-photo/bangkok-thailand-samsung-launch-new-600w-1793769595.jpg" });
         _daftarBarang.Add(new Barang { NamaBarang = "Samsung Galaxy S9", Divisi = "Samsung", HargaBarang = 14000000, Gambar = "https://www.shutterstock.com/image-photo/moscow-russia-march-2-2018-600w-1046514499.jpg" });
         _daftarBarang.Add(new Barang { NamaBarang = "Laptop HP Pavilion", Divisi = "HP", HargaBarang = 20000000, Gambar = "https://www.shutterstock.com/image-photo/bangkok-thailand-hp-launch-new-600w-2126914541.jpg" });
-        //_daftarBarang.Add(new Barang { NamaBarang = "Macbook XYZ", Divisi = "Apple", HargaBarang = 25000000 });
+        _daftarBarang.Add(new Barang { NamaBarang = "Macbook Air Pro", Divisi = "Apple", HargaBarang = 25000000, Gambar = "https://www.shutterstock.com/image-photo/macbook-pro-m1-15inch-apple-600w-1996850003.jpg" });
     }
 
     public class Barang
