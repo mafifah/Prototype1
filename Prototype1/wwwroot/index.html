@@ -29,8 +29,34 @@
 
     <script src="_framework/blazor.webview.js" autostart="false"></script>
     <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
-
-
+    <script>
+        function tampilkanModalMenu(namaKontrol) {
+            let container = document.querySelector("#ModalMenuContainer");
+            let modal = document.querySelector("#ModalMenuContainer #ModalMenu");
+            let navigasi = document.querySelector("#navigasi-menu");
+            let header = document.querySelector("#header-app");
+            navigasi.classList.remove("fixed-bottom");
+            header.classList.remove("rz-header");
+            header.classList.remove("header");
+            container.classList.add("active");
+            setTimeout(() => {
+                modal.classList.add("active");
+            }, 40);
+        }
+        function hideModalMenu(namaKontrol) {
+            let container = document.querySelector("#ModalMenuContainer");
+            let modal = document.querySelector("#ModalMenuContainer #ModalMenu");
+            let navigasi = document.querySelector("#navigasi-menu");
+            let header = document.querySelector("#header-app");
+            navigasi.classList.add("fixed-bottom");
+            header.classList.add("rz-header");
+            header.classList.add("header");
+            modal.classList.remove("active");
+            setTimeout(() => {
+                container.classList.remove("active");
+            }, 400);
+        }
+    </script>
 </body>
 
 </html>

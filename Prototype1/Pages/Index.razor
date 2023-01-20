@@ -1,35 +1,195 @@
 ﻿@page "/"
-
-<div class="d-flex flex-row flex-nowrap overflow-auto" style="margin-left:0vh;">
-    @foreach(var item in _daftarBarang)
-    {
-        <RadzenCard Class="m-3" Style="max-width: 7.5rem!important; max-height:12.5rem !important; margin-right: -0.7rem !important;">
-            <div class="d-flex flex-row p-3">
-                    <RadzenImage Path="@item.Gambar" Style="width: 7.4rem !important; margin-left: -2.2rem !important; margin-top: -2.2rem !important; border-radius: 0.2rem !important; margin-bottom: -2rem;" />
-            </div>
-            <RadzenCard Class="rz-shadow-0 rz-border-radius-0" style="margin: 0 -1.3rem !important; padding: 0.9rem !important;">
-                <RadzenText TextStyle="TextStyle.Caption">@item.NamaBarang</RadzenText>
-                <div class="row">
-                    <div class="col-md-12">
-                        <RadzenText TextStyle="TextStyle.Body2"><b>@String.Format(new System.Globalization.CultureInfo("id-ID"), "{0:C}", item?.HargaBarang)</b></RadzenText>
-                        <RadzenText TextStyle="TextStyle.Caption">@item.Divisi</RadzenText>
-                    </div>
-                </div>
-            </RadzenCard>
-        </RadzenCard>
+@inject IJSRuntime _js
+<style>
+    .txbpencarian {
+        border-radius: 5px;
     }
-</div>
 
+    .pesan .badge-notif {
+        position: absolute;
+        top: -0.3vh;
+        margin-left: 1.2vh;
+        margin-top: 0.5vh;
+        padding: 0px 4px;
+        border-radius: 40%;
+        background: red;
+        color: white;
+        font-size: smaller;
+    }
+
+    .notifikasi .badge-notif {
+        position: absolute;
+        top: -0.2vh;
+        margin-left: 1.2vh;
+        margin-top: 0.5vh;
+        padding: 0px 4px;
+        border-radius: 40%;
+        background: red;
+        color: white;
+        font-size: smaller;
+    }
+
+    .notifikasi:focus {
+        outline: 0 !important;
+        border: 0 !important
+    }
+
+    .keranjang .badge-notif {
+        position: absolute;
+        top: -0.3vh;
+        margin-left: 1.2vh;
+        margin-top: 0.5vh;
+        padding: 0px 4px;
+        border-radius: 40%;
+        background: red;
+        color: white;
+        font-size: smaller;
+    }
+
+    .body {
+        height: 100%;
+    }
+
+    .navbar {
+        padding-top: 0px !important;
+        padding-bottom: 0px !important;
+    }
+
+    .lebar-icon-10-mobile {
+        width: 8% !important;
+    }
+</style>
+
+<div style="height:100%; background-color:whitesmoke">
+    <RadzenLayout class="rz-shadow-3" Style="background-color:whitesmoke; height: 400px; grid-template-columns: 1fr auto; grid-template-areas: 'rz-header rz-header' 'rz-body rz-sidebar'">
+        <RadzenHeader id="header-app" Style="background-color:whitesmoke !important;">
+            <div class="d-flex justify-content-end align-items-center">
+                <div style="width: 45%; margin-right:-0.5vw">
+                    <DxTextBox NullText="Cari" CssClass="txbpencarian">
+                    </DxTextBox>
+                </div>
+                <button style="box-shadow: none !important;" type="button" class="btn btn-default pesan">
+                    <span class="badge-notif"><b>4</b></span>
+                    <span style="font-size:22px !important;" class="fa fa-solid fa-envelope icon-color" aria-hidden="true"></span>
+                </button>
+                <button style="box-shadow:none !important;" id="popup-notifikasi" type="button" class="btn btn-default notifikasi">
+                    <span class="badge-notif"><b>10</b></span>
+                    <span style="font-size:22px !important;" class="fa fa-solid fa-bell icon-color" aria-hidden="true"></span>
+                </button>
+                <button style="box-shadow:none !important;" id="popup-keranjang" type="button" class="btn btn-default keranjang">
+                    <span class="badge-notif"><b>15</b></span>
+                    <span style="font-size:22px !important;" class="fa fa-solid fa-shopping-cart icon-color" aria-hidden="true"></span>
+                </button>
+                <button style="box-shadow:none !important;" type="button" class="btn btn-default" @onclick="@ProsesTampilkanMenu">
+                    <span style="font-size:22px !important;" class="fa fa-solid fa-bars icon-color" aria-hidden="true"></span>
+                </button>
+            </div>
+        </RadzenHeader>
+        <RadzenBody class="body">
+            <div>
+                <div class="d-flex flex-row flex-nowrap overflow-auto" style="margin-left:-2vh !important">
+                    @foreach (var item in _daftarBarang)
+                    {
+                            <RadzenCard Class="m-3" Style="max-width: 7.5rem!important; max-height:12.5rem !important; margin-right: -0.7rem !important;">
+                                <div class="d-flex flex-row p-3">
+                                    <RadzenImage Path="@item.Gambar" Style="width: 7.4rem !important; margin-left: -2.2rem !important; margin-top: -2.2rem !important; border-radius: 0.2rem !important; margin-bottom: -2rem;" />
+                                </div>
+                                <RadzenCard Class="rz-shadow-0 rz-border-radius-0" style="margin: 0 -1.3rem !important; padding: 0.9rem !important;">
+                                    <RadzenText TextStyle="TextStyle.Caption">@item.NamaBarang</RadzenText>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <RadzenText TextStyle="TextStyle.Body2"><b>@String.Format(new System.Globalization.CultureInfo("id-ID"), "{0:C}", item?.HargaBarang)</b></RadzenText>
+                                            <RadzenText TextStyle="TextStyle.Caption">@item.Divisi</RadzenText>
+                                        </div>
+                                    </div>
+                                </RadzenCard>
+                            </RadzenCard>
+                    }
+                </div>
+            </div>
+        </RadzenBody>
+    </RadzenLayout>
+    <nav class="navbar bg-light navbar-expand fixed-bottom" id="navigasi-menu">
+        <ul class="navbar-nav nav-justified w-100">
+            <li class="nav-item">
+                <a style="color:black;" href="#" class="nav-link text-center">
+                    <i class="fa-solid fa-house" style="color:green"></i><span class="small d-block" style="color:forestgreen">Home</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a style="color:black;" href="#" class="nav-link text-center">
+                    <i class="fa-solid fa-heart"></i><span class="small d-block">Wishlist</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a style="color:black;" href="#" class="nav-link text-center">
+                    <i class="fa-solid fa-receipt"></i><span class="small d-block">Transaksi</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+@*Modal Menu*@
+<div id="ModalMenuContainer">
+    <div id="ModalMenu">
+        <button style="box-shadow: none !important;" type="button" @onclick="@ProsesHideMenu" class="btn btn-default pesan">
+           <span style="font-size:22px !important;" class="fa fa-solid fa-xmark icon-color" aria-hidden="true"></span>
+        </button>
+        <span style="margin-top:1em;"><b>Menu Utama</b></span>
+    </div>
+</div>
+<style>
+    #ModalMenuContainer{
+        position:fixed;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        align-items: flex-end;
+        justify-content: center;
+        display: none;
+    }
+
+    #ModalMenuContainer.active {
+        display: flex;
+    }
+    #ModalMenu{
+        background-color: #fff;
+        width:100%;
+        height:100%;
+        transform: translateY(100%);
+        transition: transform 0.4s ease-in-out;
+    }
+    #ModalMenu.active {
+        transform: translateY(0);
+    }
+</style>
+@*End Modal Menu*@
 @code {
+    bool _tampilkanMenu { get; set; } = true;
     private List<Barang> _daftarBarang = new();
+
     protected override async Task OnInitializedAsync()
     {
         _daftarBarang.Add(new Barang { NamaBarang = "Samsung Note 10", Divisi = "Samsung", HargaBarang = 15000000, Gambar = "https://www.shutterstock.com/image-photo/bangkok-thailand-samsung-launch-new-600w-1793769595.jpg" });
         _daftarBarang.Add(new Barang { NamaBarang = "Samsung Galaxy S9", Divisi = "Samsung", HargaBarang = 14000000, Gambar = "https://www.shutterstock.com/image-photo/moscow-russia-march-2-2018-600w-1046514499.jpg" });
         _daftarBarang.Add(new Barang { NamaBarang = "Laptop HP Pavilion", Divisi = "HP", HargaBarang = 20000000, Gambar = "https://www.shutterstock.com/image-photo/bangkok-thailand-hp-launch-new-600w-2126914541.jpg" });
-        _daftarBarang.Add(new Barang { NamaBarang = "Macbook Air Pro", Divisi = "Apple", HargaBarang = 25000000, Gambar = "https://www.shutterstock.com/image-photo/macbook-pro-m1-15inch-apple-600w-1996850003.jpg" });
+        _daftarBarang.Add(new Barang { NamaBarang = "Samsung Note 10", Divisi = "Samsung", HargaBarang = 15000000, Gambar = "https://www.shutterstock.com/image-photo/bangkok-thailand-samsung-launch-new-600w-1793769595.jpg" });
+        _daftarBarang.Add(new Barang { NamaBarang = "Samsung Galaxy S9", Divisi = "Samsung", HargaBarang = 14000000, Gambar = "https://www.shutterstock.com/image-photo/moscow-russia-march-2-2018-600w-1046514499.jpg" });
+        _daftarBarang.Add(new Barang { NamaBarang = "Laptop HP Pavilion", Divisi = "HP", HargaBarang = 20000000, Gambar = "https://www.shutterstock.com/image-photo/bangkok-thailand-hp-launch-new-600w-2126914541.jpg" });
+        //_daftarBarang.Add(new Barang { NamaBarang = "Macbook XYZ", Divisi = "Apple", HargaBarang = 25000000 });
     }
 
+    public void ProsesTampilkanMenu()
+    {
+        _js.InvokeVoidAsync("tampilkanModalMenu", "");
+    }
+
+    public void ProsesHideMenu()
+    {
+        _js.InvokeVoidAsync("hideModalMenu", "");
+    }
     public class Barang
     {
         public string NamaBarang { get; set; }
