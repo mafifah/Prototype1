@@ -32,10 +32,10 @@
     <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script>
-        function tampilkanModalMenu() {
+        function tampilkanModal(idKontrol, idContainer) {
             hideNavigasi();
-            let container = document.querySelector("#ModalMenuContainer");
-            let modal = document.querySelector("#ModalMenuContainer #ModalMenu");
+            let container = document.querySelector(idContainer);
+            let modal = document.querySelector(idKontrol);
             let header = document.querySelector("#header-app");
             header.classList.remove("rz-header");
             header.classList.remove("header");
@@ -43,11 +43,18 @@
             setTimeout(() => {
                 modal.classList.add("active");
             }, 40);
+            if (idKontrol == "#ModalCari") {
+                document.getElementById("attr-cari").hidden = true;
+                document.getElementById("text-cari").focus();
+            }
         }
-        function hideModalMenu() {
+        function hideModal(idKontrol, idContainer) {
+            if (idKontrol == "#ModalCari") {
+                document.getElementById("attr-cari").hidden = false;
+            }
             tampilkanNavigasi();
-            let container = document.querySelector("#ModalMenuContainer");
-            let modal = document.querySelector("#ModalMenuContainer #ModalMenu");
+            let container = document.querySelector(idContainer);
+            let modal = document.querySelector(idKontrol);
             let header = document.querySelector("#header-app");
             header.classList.add("rz-header");
             header.classList.add("header");
@@ -59,7 +66,6 @@
         function tampilkanNavigasi() {
             let navigasi = document.querySelector("#navigasi-menu");
             navigasi.classList.add("fixed-bottom");
-
         }
         function hideNavigasi() {
             let navigasi = document.querySelector("#navigasi-menu");

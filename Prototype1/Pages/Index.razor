@@ -95,9 +95,9 @@
         display: none;
     }
 
-        #ModalMenuContainer.active {
-            display: flex;
-        }
+    #ModalMenuContainer.active {
+        display: flex;
+    }
 
     #ModalMenu {
         background-color: #fff;
@@ -107,10 +107,40 @@
         transition: transform 0.4s ease-in-out;
     }
 
-        #ModalMenu.active {
-            transform: translateY(0);
-        }
+    #ModalMenu.active {
+        transform: translateY(0);
+    }
     /*CSS Menu Utama*/
+
+    /*CSS Cari*/
+    #ModalCariContainer {
+        position: fixed;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        align-items: flex-end;
+        justify-content: center;
+        display: none;
+    }
+
+    #ModalCariContainer.active {
+        display: flex;
+    }
+
+    #ModalCari {
+        background-color: #fff;
+        width: 100%;
+        height: 100%;
+        transform: translateY(100%);
+        transition: transform 0.4s ease-in-out;
+    }
+
+    #ModalCari.active {
+        transform: translateY(0);
+    }
+    /*CSS Cari*/
 </style>
 
 <div style="height:100%; background-color:whitesmoke">
@@ -118,9 +148,9 @@
         <RadzenHeader id="header-app" Style="background-color:whitesmoke !important;">
             <div class="d-flex justify-content-end align-items-center">
                 <div class="ms-md-auto pe-md-3 d-flex align-items-center">
-                    <div class="input-group">
+                    <div id="attr-cari" class="input-group">
                         <span class="input-group-text text-body" style="background-color:transparent;font-size:0.7rem !important;"><i class="fas fa-search" aria-hidden="true"></i></span>
-                        <input type="text" style="box-shadow:none !important; border:none;" class="form-control" placeholder="Cari...">
+                        <input type="text" style="box-shadow:none !important; border:none;" class="form-control" placeholder="Cari..." @onfocus="@ProsesTampilkanCari">
                     </div>
                 </div>
                 <button style="box-shadow: none !important;" type="button" class="btn btn-default pesan">
@@ -142,7 +172,7 @@
         </RadzenHeader>
         <RadzenBody class="body">
             <div class="hide-scrollbar">
-                <RadzenCard Style="width:auto; height: 2.4em; margin-left:0.5em; margin-right:0.7em; margin-bottom:0.9em; padding: 0.5em;">
+                <RadzenCard Style="width:auto; height: 2.7em; margin-left:0.5em; margin-right:0.7em; margin-bottom:0.9em; padding: 0.5em;">
                     <div class="row">
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
                             <span style="font-size:1.4em !important; float:left; margin-top:-0.3em;color:forestgreen"><i class="fa-solid fa-square-parking"></i></span>
@@ -310,6 +340,28 @@
 </div>
 @*End Modal Menu*@
 
+@*Modal Cari*@
+<div id="ModalCariContainer">
+    <div id="ModalCari" style="background-color:whitesmoke;">
+        <div class="row">
+            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-1">
+                <button style="box-shadow: none !important;" type="button" @onclick="@ProsesHideCari" class="btn btn-default pesan">
+                    <span style="font-size:1.3em !important; margin-top:0.5em !important;" class="fa fa-solid fa-left-long" aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 col-11">
+                <div class="ms-md-auto pe-md-3 d-flex align-items-center">
+                    <div class="input-group">
+                        <span class="input-group-text text-body" style="background-color:transparent;font-size:0.7rem !important;"><i class="fas fa-search" aria-hidden="true"></i></span>
+                        <input id="text-cari" type="text" style="box-shadow:none !important; border:none;" class="form-control" placeholder="Cari...">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*End Modal Cari*@
+
 @code {
     List<uimKategori> _dataKategori = new();
     List<uimBarang> _dataBarang = new();
@@ -370,12 +422,22 @@
 
     public void ProsesTampilkanMenu()
     {
-        _js.InvokeVoidAsync("tampilkanModalMenu");
+        _js.InvokeVoidAsync("tampilkanModal", "#ModalMenu", "#ModalMenuContainer");
     }
 
     public void ProsesHideMenu()
     {
-        _js.InvokeVoidAsync("hideModalMenu");
+        _js.InvokeVoidAsync("hideModal", "#ModalMenu", "#ModalMenuContainer");
+    }
+
+    public void ProsesTampilkanCari()
+    {
+        _js.InvokeVoidAsync("tampilkanModal", "#ModalCari", "#ModalCariContainer");
+    }
+
+    public void ProsesHideCari()
+    {
+        _js.InvokeVoidAsync("hideModal", "#ModalCari", "#ModalCariContainer");
     }
 
     public void Start(int detik)
