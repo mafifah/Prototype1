@@ -112,7 +112,7 @@
     }
     /*CSS Menu Utama*/
 
-    /*CSS Cari*/
+    /*CSS Menu Utama*/
     #ModalCariContainer {
         position: fixed;
         top: 0px;
@@ -140,7 +140,26 @@
     #ModalCari.active {
         transform: translateY(0);
     }
-    /*CSS Cari*/
+    /*CSS Menu Utama*/
+
+    .row.vertical-divider {
+        overflow: hidden;
+    }
+
+    .row.vertical-divider > div[class^="col-"] {
+        text-align: center;
+        margin-top: -0.1em;
+        border-left: 1px solid #e0e0e0;
+        border-right: 1px solid #e0e0e0;
+    }
+
+    .row.vertical-divider div[class^="col-"]:first-child {
+        border-left: none;
+    }
+
+    .row.vertical-divider div[class^="col-"]:last-child {
+        border-right: none;
+    }
 </style>
 
 <div style="height:100%; background-color:whitesmoke">
@@ -194,7 +213,7 @@
                     <div class="d-flex flex-row flex-nowrap overflow-auto">
                         @foreach (var kategori in _dataKategori)
                         {
-                                <RadzenCard class="rz-shadow-0 rz-border-radius-0" style="padding: 0.9rem !important;">
+                                <RadzenCard class="rz-shadow-0 rz-border-radius-0" Style="padding: 0.9rem !important; background-color:transparent;">
                                     <span style="font-size:42px !important;" class="@kategori.Icon"></span>
                                     <RadzenText TextStyle="TextStyle.Body2" Style="font-size:11px">@kategori.Kategori</RadzenText>
                                 </RadzenCard>
@@ -212,8 +231,8 @@
                                 if (_nomorPromo == 0)
                                 {
                                             <div class="carousel-item active" style="padding: 0px 10px 0px 10px">
-                                                <div style="border-radius:2%">
-                                                    <img height="180" width="280" src="@promo.UrlImage" class="d-block w-100" alt="...">
+                                                <div>
+                                                    <img height="180" width="280" src="@promo.UrlImage" style="border-radius:2% !important;" class="d-block w-100" alt="...">
                                                 </div>
                                             </div>
                                 }
@@ -221,8 +240,8 @@
                                 else
                                 {
                                             <div class="carousel-item" style="padding: 0px 10px 0px 10px">
-                                                <div style="border-radius:2%">
-                                                    <img height="180" width="280" src="@promo.UrlImage" class="d-block w-100" alt="...">
+                                                <div>
+                                                    <img height="180" width="280" src="@promo.UrlImage" style="border-radius:2% !important;" class="d-block w-100" alt="...">
                                                 </div>
                                             </div>
                                 }
@@ -350,7 +369,7 @@
                 </button>
             </div>
             <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 col-11">
-                <div class="ms-md-auto pe-md-3 d-flex align-items-center">
+                <div class="ms-md-auto pe-md-3 d-flex align-items-center" style="width:97%;">
                     <div class="input-group">
                         <span class="input-group-text text-body" style="background-color:transparent;font-size:0.7rem !important;"><i class="fas fa-search" aria-hidden="true"></i></span>
                         <input id="text-cari" type="text" style="box-shadow:none !important; border:none;" class="form-control" placeholder="Cari...">
