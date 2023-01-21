@@ -1,5 +1,6 @@
 ﻿@page "/"
 @inject IJSRuntime _js
+@implements IDisposable
 <style>
     .txbpencarian {
         border-radius: 5px;
@@ -7,7 +8,7 @@
 
     .pesan .badge-notif {
         position: absolute;
-        top: -0.3vh;
+        top: -0.1vh;
         margin-left: 1.2vh;
         margin-top: 0.5vh;
         padding: 0px 4px;
@@ -19,7 +20,7 @@
 
     .notifikasi .badge-notif {
         position: absolute;
-        top: -0.2vh;
+        top: -0.1vh;
         margin-left: 1.2vh;
         margin-top: 0.5vh;
         padding: 0px 4px;
@@ -36,7 +37,7 @@
 
     .keranjang .badge-notif {
         position: absolute;
-        top: -0.3vh;
+        top: -0.1vh;
         margin-left: 1.2vh;
         margin-top: 0.5vh;
         padding: 0px 4px;
@@ -48,6 +49,12 @@
 
     .body {
         height: 100%;
+        margin: 0px;
+        padding: 0px;
+    }
+
+    .hide-scrollbar div::-webkit-scrollbar {
+        display: none !important;
     }
 
     .navbar {
@@ -55,21 +62,88 @@
         padding-bottom: 0px !important;
     }
 
+    .input-group {
+        background-color: #ffff !important;
+        margin-top: 0.5em !important;
+        margin-bottom: 0.5em !important;
+        margin-left: 0.5em !important;
+        border-radius: 0.5em !important;
+        box-shadow: 0px 1px 12px rgba(0, 0, 0, 0.1);
+        border: none;
+    }
+
+    .input-group-text {
+        border: none;
+        margin-top: 0.5em;
+        margin-right: -1em;
+    }
+
     .lebar-icon-10-mobile {
         width: 8% !important;
+    }
+
+    /*CSS Menu Utama*/
+    #ModalMenuContainer {
+        position: fixed;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        align-items: flex-end;
+        justify-content: center;
+        display: none;
+    }
+
+        #ModalMenuContainer.active {
+            display: flex;
+        }
+
+    #ModalMenu {
+        background-color: #fff;
+        width: 100%;
+        height: 100%;
+        transform: translateY(100%);
+        transition: transform 0.4s ease-in-out;
+    }
+
+        #ModalMenu.active {
+            transform: translateY(0);
+        }
+    /*CSS Menu Utama*/
+
+    .row.vertical-divider {
+        overflow: hidden;
+    }
+
+    .row.vertical-divider > div[class^="col-"] {
+        text-align: center;
+        margin-top: -0.1em;
+        border-left: 1px solid #e0e0e0;
+        border-right: 1px solid #e0e0e0;
+    }
+
+    .row.vertical-divider div[class^="col-"]:first-child {
+        border-left: none;
+    }
+
+    .row.vertical-divider div[class^="col-"]:last-child {
+        border-right: none;
     }
 </style>
 
 <div style="height:100%; background-color:whitesmoke">
-    <RadzenLayout class="rz-shadow-3" Style="background-color:whitesmoke; height: 400px; grid-template-columns: 1fr auto; grid-template-areas: 'rz-header rz-header' 'rz-body rz-sidebar'">
+    <RadzenLayout class="rz-shadow-3 hide-scrollbar" Style="background-color:whitesmoke; height: 100%; grid-template-columns: 1fr auto; grid-template-areas: 'rz-header rz-header' 'rz-body rz-sidebar'">
         <RadzenHeader id="header-app" Style="background-color:whitesmoke !important;">
             <div class="d-flex justify-content-end align-items-center">
-                <div style="width: 45%; margin-right:-0.5vw">
-                    <DxTextBox NullText="Cari" CssClass="txbpencarian">
-                    </DxTextBox>
+                <div class="ms-md-auto pe-md-3 d-flex align-items-center">
+                    <div class="input-group">
+                        <span class="input-group-text text-body" style="background-color:transparent;font-size:0.7rem !important;"><i class="fas fa-search" aria-hidden="true"></i></span>
+                        <input type="text" style="box-shadow:none !important; border:none;" class="form-control" placeholder="Cari...">
+                    </div>
                 </div>
                 <button style="box-shadow: none !important;" type="button" class="btn btn-default pesan">
-                    <span class="badge-notif"><b>4</b></span>
+                    <span class="badge-notif"><b>42</b></span>
                     <span style="font-size:22px !important;" class="fa fa-solid fa-envelope icon-color" aria-hidden="true"></span>
                 </button>
                 <button style="box-shadow:none !important;" id="popup-notifikasi" type="button" class="btn btn-default notifikasi">
@@ -86,29 +160,143 @@
             </div>
         </RadzenHeader>
         <RadzenBody class="body">
-            <div>
-                <div class="d-flex flex-row flex-nowrap overflow-auto" style="margin-left:-2vh !important">
-                    @foreach (var item in _daftarBarang)
-                    {
-                            <RadzenCard Class="m-3" Style="max-width: 7.5rem!important; max-height:12.5rem !important; margin-right: -0.7rem !important;">
-                                <div class="d-flex flex-row p-3">
-                                    <RadzenImage Path="@item.Gambar" Style="width: 7.4rem !important; margin-left: -2.2rem !important; margin-top: -2.2rem !important; border-radius: 0.2rem !important; margin-bottom: -2rem;" />
-                                </div>
-                                <RadzenCard Class="rz-shadow-0 rz-border-radius-0" style="margin: 0 -1.3rem !important; padding: 0.9rem !important;">
-                                    <RadzenText TextStyle="TextStyle.Caption">@item.NamaBarang</RadzenText>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <RadzenText TextStyle="TextStyle.Body2"><b>@String.Format(new System.Globalization.CultureInfo("id-ID"), "{0:C}", item?.HargaBarang)</b></RadzenText>
-                                            <RadzenText TextStyle="TextStyle.Caption">@item.Divisi</RadzenText>
-                                        </div>
-                                    </div>
+            <div class="hide-scrollbar">
+                <RadzenCard Style="width:auto; height: 2.4em; margin-left:0.5em; margin-right:0.7em; margin-bottom:0.9em; padding: 0.5em;">
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
+                            <span style="font-size:1.4em !important; float:left; margin-top:-0.3em;color:forestgreen"><i class="fa-solid fa-square-parking"></i></span>
+                            <div style="margin-top:-0.6em;margin-left:1.6em;">
+                                <RadzenText TextStyle="TextStyle.Caption">20</RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body2" Style="margin-top:-0.4em !important"><strong>Poin</strong></RadzenText>
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
+                            <span style="font-size:1.4em !important; float:left; margin-top:-0.3em; color:orange"><i class="fa-solid fa-star"></i></span>
+                            <div style="margin-top:-0.6em;margin-left:1.9em;">
+                                <RadzenText TextStyle="TextStyle.Caption">Basic</RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body2" Style="margin-top:-0.4em !important"><strong>Member</strong></RadzenText>
+                            </div>
+                        </div>
+                    </div>
+                </RadzenCard>
+                <div style="background-color:azure; margin: 0px; border-radius:5%" class="hide-scrollbar">
+                    <div class="d-flex flex-row flex-nowrap overflow-auto">
+                        @foreach (var kategori in _dataKategori)
+                        {
+                                <RadzenCard class="rz-shadow-0 rz-border-radius-0" style="padding: 0.9rem !important;">
+                                    <span style="font-size:42px !important;" class="@kategori.Icon"></span>
+                                    <RadzenText TextStyle="TextStyle.Body2" Style="font-size:11px">@kategori.Kategori</RadzenText>
                                 </RadzenCard>
-                            </RadzenCard>
-                    }
+                        }
+                    </div>
+                    @*awal Carousel *@
+                    <div id="@_carouselName" class="carousel slide" data-bs-ride="carousel" data-bs-wrap="true" data-bs-pause="false">
+                        <div class="carousel-inner">
+                            @foreach (var promo in _dataPromo)
+                            {
+                                if (_nomorPromo >= _dataPromo.Count)
+                                {
+                                    _nomorPromo = 0;
+                                }
+                                if (_nomorPromo == 0)
+                                {
+                                            <div class="carousel-item active" style="padding: 0px 10px 0px 10px">
+                                                <div style="border-radius:2%">
+                                                    <img height="180" width="280" src="@promo.UrlImage" class="d-block w-100" alt="...">
+                                                </div>
+                                            </div>
+                                }
+
+                                else
+                                {
+                                            <div class="carousel-item" style="padding: 0px 10px 0px 10px">
+                                                <div style="border-radius:2%">
+                                                    <img height="180" width="280" src="@promo.UrlImage" class="d-block w-100" alt="...">
+                                                </div>
+                                            </div>
+                                }
+                                _nomorPromo += 1;
+                            }
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                            <span style="display:none !important" class="carousel-control-prev-icon" aria-hidden="false"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                            <span style="display:none !important" class="carousel-control-next-icon" aria-hidden="false"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                    @*akhir Carousel *@
+
+                    <RadzenText TextStyle="TextStyle.H5" Style="margin: 20px 0px 0px 15px">Lanjut cek ini, yuk</RadzenText>
+                    <div class="d-flex flex-row flex-nowrap overflow-auto">
+                        @foreach (var barang in _dataBarang)
+                        {
+                                <RadzenCard Class="m-3" Style="max-width: 7.5rem!important; max-height:12.5rem !important; margin-right: -0.7rem !important;">
+                                    <div class="d-flex flex-row p-3">
+                                        <RadzenImage Path="@barang.Gambar" Style="width: 7.4rem !important; margin-left: -2.2rem !important; margin-top: -2.2rem !important; border-radius: 0.2rem !important; margin-bottom: -2rem;" />
+                                    </div>
+                                    <RadzenCard Class="rz-shadow-0 rz-border-radius-0" style="margin: 0 -1.3rem !important; padding: 0.9rem !important;">
+                                        <RadzenText TextStyle="TextStyle.Caption">@barang.NamaBarang</RadzenText>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <RadzenText TextStyle="TextStyle.Body2"><b>@String.Format(new System.Globalization.CultureInfo("id-ID"), "{0:N0}", barang?.HargaBarang)</b></RadzenText>
+                                                <RadzenText TextStyle="TextStyle.Caption">@barang.Divisi</RadzenText>
+                                            </div>
+                                        </div>
+                                    </RadzenCard>
+                                </RadzenCard>
+                        }
+                    </div>
+
+                    @*Diskon Spesial*@
+                    <RadzenText TextStyle="TextStyle.H4" Style="margin: 0.5em 0px 0px 0.6em">Diskon Spesial</RadzenText>
+                    <div class="d-flex flex-row flex-nowrap overflow-auto" style="margin: 0.2em 0px 0px 1.1em">
+                        <RadzenText TextStyle="TextStyle.Body1">Berakhir dalam  @_waktuDiskonSpesial</RadzenText>
+                    </div>
+                    <div class="d-flex flex-row flex-nowrap overflow-auto">
+                        @foreach (var barang in _dataBarangDiskonSpesial)
+                        {
+                                <RadzenCard Class="m-3" Style="max-width: 7.5rem!important; max-height:12.5rem !important; margin-right: -0.7rem !important;">
+                                    <div class="d-flex flex-row p-3">
+                                        <RadzenImage Path="@barang.Gambar" Style="width: 7.4rem !important; margin-left: -2.2rem !important; margin-top: -2.2rem !important; border-radius: 0.2rem !important; margin-bottom: -2rem;" />
+                                    </div>
+                                    <RadzenCard Class="rz-shadow-0 rz-border-radius-0" style="margin: 0 -1.3rem !important; padding: 0.9rem !important;">
+                                        <RadzenText TextStyle="TextStyle.Caption">@barang.NamaBarang</RadzenText>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <RadzenText TextStyle="TextStyle.Body2"><b>@String.Format(new System.Globalization.CultureInfo("id-ID"), "{0:N0}", barang?.HargaDiskon)</b></RadzenText>
+                                                <RadzenText TextStyle="TextStyle.Body2" Style="text-decoration: line-through"><b>@String.Format(new System.Globalization.CultureInfo("id-ID"), "{0:N0}", barang?.HargaBarang)</b></RadzenText>
+
+                                            </div>
+                                        </div>
+                                    </RadzenCard>
+                                </RadzenCard>
+                        }
+                    </div>
+
+                    @*Spesial Hari ini*@
+                    <RadzenText TextStyle="TextStyle.H4" Style="margin: 1.2em 0.0em 0.0em 0.9em">Spesial Hari ini</RadzenText>
+                    @*<RadzenRow Class="rz-text-align-center rz-border-info-light">
+                    <RadzenColumn Size="6" Class="rz-background-color-info-lighter rz-color-info rz-p-5">
+                    <RadzenImage Path="https://static.vecteezy.com/system/resources/previews/001/637/223/non_2x/big-sale-discount-banner-template-vector.jpg" Style="width: 7.4rem !important; margin-left: -2.2rem !important; margin-top: -2.2rem !important; border-radius: 0.2rem !important; margin-bottom: -2rem;" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="6" Class="rz-background-color-info-lighter rz-color-info rz-p-5">
+                    <RadzenImage Path="https://i.pinimg.com/originals/76/2c/97/762c97599dfb08a2a4c7bff8b31e7185.jpg" Style="width: 7.4rem !important; margin-left: -2.2rem !important; margin-top: -2.2rem !important; border-radius: 0.2rem !important; margin-bottom: -2rem;" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="6" Class="rz-background-color-info-lighter rz-color-info rz-p-5">
+                    <RadzenImage Path="https://i.pinimg.com/originals/76/2c/97/762c97599dfb08a2a4c7bff8b31e7185.jpg" Style="width: 7.4rem !important; margin-left: -2.2rem !important; margin-top: -2.2rem !important; border-radius: 0.2rem !important; margin-bottom: -2rem;" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="6" Class="rz-background-color-info-lighter rz-color-info rz-p-5">
+                    <RadzenImage Path="https://static.vecteezy.com/system/resources/previews/001/637/223/non_2x/big-sale-discount-banner-template-vector.jpg" Style="width: 7.4rem !important; margin-left: -2.2rem !important; margin-top: -2.2rem !important; border-radius: 0.2rem !important; margin-bottom: -2rem;" />
+                    </RadzenColumn>
+                    </RadzenRow>*@
                 </div>
             </div>
         </RadzenBody>
     </RadzenLayout>
+
     <nav class="navbar bg-light navbar-expand fixed-bottom" id="navigasi-menu">
         <ul class="navbar-nav nav-justified w-100">
             <li class="nav-item">
@@ -129,72 +317,135 @@
         </ul>
     </nav>
 </div>
+
 @*Modal Menu*@
 <div id="ModalMenuContainer">
     <div id="ModalMenu">
         <button style="box-shadow: none !important;" type="button" @onclick="@ProsesHideMenu" class="btn btn-default pesan">
-           <span style="font-size:22px !important;" class="fa fa-solid fa-xmark icon-color" aria-hidden="true"></span>
+            <span style="font-size:22px !important;" class="fa fa-solid fa-xmark icon-color" aria-hidden="true"></span>
         </button>
         <span style="margin-top:1em;"><b>Menu Utama</b></span>
     </div>
 </div>
-<style>
-    #ModalMenuContainer{
-        position:fixed;
-        top: 0px;
-        left: 0px;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        align-items: flex-end;
-        justify-content: center;
-        display: none;
-    }
-
-    #ModalMenuContainer.active {
-        display: flex;
-    }
-    #ModalMenu{
-        background-color: #fff;
-        width:100%;
-        height:100%;
-        transform: translateY(100%);
-        transition: transform 0.4s ease-in-out;
-    }
-    #ModalMenu.active {
-        transform: translateY(0);
-    }
-</style>
 @*End Modal Menu*@
-@code {
-    bool _tampilkanMenu { get; set; } = true;
-    private List<Barang> _daftarBarang = new();
 
+@code {
+    List<uimKategori> _dataKategori = new();
+    List<uimBarang> _dataBarang = new();
+    List<uimBarang> _dataBarangDiskonSpesial = new();
+    List<uimPromo> _dataPromo = new();
+
+    const string _carouselName = "carouselExampleIndicators"; //id div class caraousel
+
+
+
+    int _nomorPromo = 0;
+    System.Timers.Timer _timerDiskonSpesial;
+    int _detik = 0;
+    string _waktuDiskonSpesial { get; set; } = "03:00:00";
+
+    [Parameter]
+    public EventCallback TimerOut { get; set; }
+
+    protected override async void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            object[] args = { _carouselName };
+            await _js.InvokeVoidAsync("startCarousel", args);
+            Start(6000);
+        }
+    }
     protected override async Task OnInitializedAsync()
     {
-        _daftarBarang.Add(new Barang { NamaBarang = "Samsung Note 10", Divisi = "Samsung", HargaBarang = 15000000, Gambar = "https://www.shutterstock.com/image-photo/bangkok-thailand-samsung-launch-new-600w-1793769595.jpg" });
-        _daftarBarang.Add(new Barang { NamaBarang = "Samsung Galaxy S9", Divisi = "Samsung", HargaBarang = 14000000, Gambar = "https://www.shutterstock.com/image-photo/moscow-russia-march-2-2018-600w-1046514499.jpg" });
-        _daftarBarang.Add(new Barang { NamaBarang = "Laptop HP Pavilion", Divisi = "HP", HargaBarang = 20000000, Gambar = "https://www.shutterstock.com/image-photo/bangkok-thailand-hp-launch-new-600w-2126914541.jpg" });
-        _daftarBarang.Add(new Barang { NamaBarang = "Samsung Note 10", Divisi = "Samsung", HargaBarang = 15000000, Gambar = "https://www.shutterstock.com/image-photo/bangkok-thailand-samsung-launch-new-600w-1793769595.jpg" });
-        _daftarBarang.Add(new Barang { NamaBarang = "Samsung Galaxy S9", Divisi = "Samsung", HargaBarang = 14000000, Gambar = "https://www.shutterstock.com/image-photo/moscow-russia-march-2-2018-600w-1046514499.jpg" });
-        _daftarBarang.Add(new Barang { NamaBarang = "Laptop HP Pavilion", Divisi = "HP", HargaBarang = 20000000, Gambar = "https://www.shutterstock.com/image-photo/bangkok-thailand-hp-launch-new-600w-2126914541.jpg" });
-        //_daftarBarang.Add(new Barang { NamaBarang = "Macbook XYZ", Divisi = "Apple", HargaBarang = 25000000 });
+        _timerDiskonSpesial = new System.Timers.Timer(1000);
+        _timerDiskonSpesial.Elapsed += OnTimedEvent;
+        _timerDiskonSpesial.AutoReset = true;
+
+        _dataKategori.Add(new uimKategori { Kategori = "Promo", Inisial = "Promo", Icon = "fa-sharp fa-solid fa-tags" });
+        _dataKategori.Add(new uimKategori { Kategori = "Lihat Semua", Inisial = "Lihat Semua", Icon = "fa-solid fa-rectangle-list" });
+        _dataKategori.Add(new uimKategori { Kategori = "Pakaian", Inisial = "Pakaian", Icon = "fa-solid fa-image" });
+        _dataKategori.Add(new uimKategori { Kategori = "Top-Up & Tagihan", Inisial = "Top-Up & Tagihan", Icon = "fa-solid fa-image" });
+        _dataKategori.Add(new uimKategori { Kategori = "Elektronik", Inisial = "Elektronik", Icon = "fa-solid fa-image" });
+        _dataKategori.Add(new uimKategori { Kategori = "Rumah Tangga", Inisial = "Rumah Tangga", Icon = "fa-solid fa-image" });
+        _dataKategori.Add(new uimKategori { Kategori = "Oalahraga", Inisial = "Oalahraga", Icon = "fa-solid fa-image" });
+        _dataKategori.Add(new uimKategori { Kategori = "Streaming", Inisial = "Streaming", Icon = "fa-solid fa-image" });
+
+        _dataBarang.Add(new uimBarang { NamaBarang = "Samsung Note 10", Divisi = "Samsung", HargaBarang = 15000000, HargaDiskon = 12999000, Gambar = "https://www.shutterstock.com/image-photo/bangkok-thailand-samsung-launch-new-600w-1793769595.jpg" });
+        _dataBarang.Add(new uimBarang { NamaBarang = "Samsung Galaxy S9", Divisi = "Samsung", HargaBarang = 14000000, HargaDiskon = 11999000, Gambar = "https://www.shutterstock.com/image-photo/moscow-russia-march-2-2018-600w-1046514499.jpg" });
+        _dataBarang.Add(new uimBarang { NamaBarang = "Laptop HP Pavilion", Divisi = "HP", HargaBarang = 20000000, HargaDiskon = 17499000, Gambar = "https://www.shutterstock.com/image-photo/bangkok-thailand-hp-launch-new-600w-2126914541.jpg" });
+        _dataBarang.Add(new uimBarang { NamaBarang = "Samsung Note 10", Divisi = "Samsung", HargaBarang = 15000000, HargaDiskon = 12999000, Gambar = "https://www.shutterstock.com/image-photo/bangkok-thailand-samsung-launch-new-600w-1793769595.jpg" });
+        _dataBarang.Add(new uimBarang { NamaBarang = "Samsung Galaxy S9", Divisi = "Samsung", HargaBarang = 14000000, HargaDiskon = 12499000, Gambar = "https://www.shutterstock.com/image-photo/moscow-russia-march-2-2018-600w-1046514499.jpg" });
+        _dataBarang.Add(new uimBarang { NamaBarang = "Laptop HP Pavilion", Divisi = "HP", HargaBarang = 20000000, HargaDiskon = 17999000, Gambar = "https://www.shutterstock.com/image-photo/bangkok-thailand-hp-launch-new-600w-2126914541.jpg" });
+        //_dataBarang.Add(new Barang { NamaBarang = "Macbook XYZ", Divisi = "Apple", HargaBarang = 25000000 });
+
+        _dataBarangDiskonSpesial = _dataBarang;
+
+        _dataPromo.Add(new uimPromo { Promo = "Promo1", UrlImage = "https://static.vecteezy.com/system/resources/previews/001/637/223/non_2x/big-sale-discount-banner-template-vector.jpg" });
+        _dataPromo.Add(new uimPromo { Promo = "Promo2", UrlImage = "https://i.pinimg.com/originals/76/2c/97/762c97599dfb08a2a4c7bff8b31e7185.jpg" });
+        _dataPromo.Add(new uimPromo { Promo = "Promo3", UrlImage = "https://img.freepik.com/free-psd/horizontal-banner-facebook-cover-with-minimal-design-home-furniture-discount_237398-104.jpg" });
+        _dataPromo.Add(new uimPromo { Promo = "Promo4", UrlImage = "https://img.freepik.com/premium-vector/modern-home-furniture-banner-template_122059-526.jpg" });
     }
 
     public void ProsesTampilkanMenu()
     {
-        _js.InvokeVoidAsync("tampilkanModalMenu", "");
+        _js.InvokeVoidAsync("tampilkanModalMenu");
     }
 
     public void ProsesHideMenu()
     {
-        _js.InvokeVoidAsync("hideModalMenu", "");
+        _js.InvokeVoidAsync("hideModalMenu");
     }
-    public class Barang
+
+    public void Start(int detik)
+    {
+        _detik = detik;
+
+        if (_detik > 0)
+        {
+            _waktuDiskonSpesial = TimeSpan.FromSeconds(_detik).ToString(@"hh\:mm\:ss");
+            StateHasChanged();
+            _timerDiskonSpesial.Start();
+        }
+    }
+    private async void OnTimedEvent(object? sender, System.Timers.ElapsedEventArgs e)
+    {
+        _detik--;
+
+        await InvokeAsync(() =>
+        {
+            _waktuDiskonSpesial = TimeSpan.FromSeconds(_detik).ToString(@"hh\:mm\:ss");
+            StateHasChanged();
+        });
+
+        if (_detik <= 0)
+        {
+            _timerDiskonSpesial.Stop();
+            await TimerOut.InvokeAsync();
+        }
+    }
+    public void Dispose()
+    {
+        _timerDiskonSpesial.Dispose();
+    }
+
+    public class uimKategori
+    {
+        public string Kategori { get; set; }
+        public string Inisial { get; set; }
+        public string Icon { get; set; }
+    }
+    public class uimBarang
     {
         public string NamaBarang { get; set; }
         public int HargaBarang { get; set; }
+        public int HargaDiskon { get; set; }
         public string Divisi { get; set; }
         public string Gambar { get; set; }
+    }
+    public class uimPromo
+    {
+        public string Promo { get; set; } = string.Empty;
+        public string UrlImage { get; set; } = string.Empty;
     }
 }
