@@ -1,6 +1,7 @@
 ﻿@page "/"
 @inject IJSRuntime _js
 @implements IDisposable
+@inject NavigationManager _nm;
 <style>
     .txbpencarian {
         border-radius: 5px;
@@ -95,9 +96,9 @@
         display: none;
     }
 
-    #ModalMenuContainer.active {
-        display: flex;
-    }
+        #ModalMenuContainer.active {
+            display: flex;
+        }
 
     #ModalMenu {
         background-color: #fff;
@@ -107,9 +108,9 @@
         transition: transform 0.4s ease-in-out;
     }
 
-    #ModalMenu.active {
-        transform: translateY(0);
-    }
+        #ModalMenu.active {
+            transform: translateY(0);
+        }
     /*CSS Menu Utama*/
 
     /*CSS Menu Utama*/
@@ -125,9 +126,9 @@
         display: none;
     }
 
-    #ModalCariContainer.active {
-        display: flex;
-    }
+        #ModalCariContainer.active {
+            display: flex;
+        }
 
     #ModalCari {
         background-color: #fff;
@@ -137,29 +138,29 @@
         transition: transform 0.4s ease-in-out;
     }
 
-    #ModalCari.active {
-        transform: translateY(0);
-    }
+        #ModalCari.active {
+            transform: translateY(0);
+        }
     /*CSS Menu Utama*/
 
     .row.vertical-divider {
         overflow: hidden;
     }
 
-    .row.vertical-divider > div[class^="col-"] {
-        text-align: center;
-        margin-top: -0.1em;
-        border-left: 1px solid #e0e0e0;
-        border-right: 1px solid #e0e0e0;
-    }
+        .row.vertical-divider > div[class^="col-"] {
+            text-align: center;
+            margin-top: -0.1em;
+            border-left: 1px solid #e0e0e0;
+            border-right: 1px solid #e0e0e0;
+        }
 
-    .row.vertical-divider div[class^="col-"]:first-child {
-        border-left: none;
-    }
+        .row.vertical-divider div[class^="col-"]:first-child {
+            border-left: none;
+        }
 
-    .row.vertical-divider div[class^="col-"]:last-child {
-        border-right: none;
-    }
+        .row.vertical-divider div[class^="col-"]:last-child {
+            border-right: none;
+        }
 </style>
 
 <div style="height:100%; background-color:whitesmoke">
@@ -372,11 +373,19 @@
                 <div class="ms-md-auto pe-md-3 d-flex align-items-center" style="width:97%;">
                     <div class="input-group">
                         <span class="input-group-text text-body" style="background-color:transparent;font-size:0.7rem !important;"><i class="fas fa-search" aria-hidden="true"></i></span>
-                        <input id="text-cari" type="text" style="box-shadow:none !important; border:none;" class="form-control" placeholder="Cari...">
+                        <input id="text-cari" type="text" style="box-shadow:none !important; border:none;" class="form-control" placeholder="Cari..." @oninput="@ProsesCariBarang" @onkeydown="@CariBarang_Enter">
                     </div>
                 </div>
             </div>
         </div>
+        @if (!string.IsNullOrWhiteSpace(_keywordCari))
+        {
+                <RadzenListBox @bind-Value="@_keywordCari" Data="@_dataBarang.Where(e => e.NamaBarang.ToUpper().Contains(_keywordCari.ToUpper())).ToList()" TextProperty="NamaBarang" Style="background-color:transparent !important;border:none !important;margin-left:0.4em !important;" ValueProperty="NamaBarang" Change=@(args => ProsesCariBarang(args))>
+                    <Template>
+                    @((context as uimBarang).NamaBarang)
+                    </Template>
+                </RadzenListBox>
+        }
     </div>
 </div>
 @*End Modal Cari*@
@@ -386,7 +395,6 @@
     List<uimBarang> _dataBarang = new();
     List<uimBarang> _dataBarangDiskonSpesial = new();
     List<uimPromo> _dataPromo = new();
-
     const string _carouselName = "carouselExampleIndicators"; //id div class caraousel
 
 
@@ -395,7 +403,7 @@
     System.Timers.Timer _timerDiskonSpesial;
     int _detik = 0;
     string _waktuDiskonSpesial { get; set; } = "03:00:00";
-
+    string _keywordCari = "";
     [Parameter]
     public EventCallback TimerOut { get; set; }
 
@@ -457,6 +465,16 @@
     public void ProsesHideCari()
     {
         _js.InvokeVoidAsync("hideModal", "#ModalCari", "#ModalCariContainer");
+    }
+
+    public void ProsesCariBarang(ChangeEventArgs e) => _keywordCari = e.Value?.ToString();
+    public void ProsesCariBarang(object args) => _nm.NavigateTo("/counter");
+    public void CariBarang_Enter(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            _nm.NavigateTo("/counter");
+        }
     }
 
     public void Start(int detik)
