@@ -380,7 +380,7 @@
         </div>
         @if (!string.IsNullOrWhiteSpace(_keywordCari))
         {
-                <RadzenListBox @bind-Value="@_keywordCari" Data="@_dataBarang.Where(e => e.NamaBarang.ToUpper().Contains(_keywordCari.ToUpper())).ToList()" TextProperty="NamaBarang" Style="background-color:transparent !important;border:none !important;margin-left:0.4em !important;" ValueProperty="NamaBarang" Change=@(args => ProsesCariBarang(args))>
+                <RadzenListBox @bind-Value="@_keywordCari" Data="@_dataBarang.Where(e => e.NamaBarang.ToUpper().Contains(_keywordCari.ToUpper())).ToList()" TextProperty="NamaBarang" Style="background-color:transparent !important;border:none !important;margin-left:0.4em !important;width:100%;" ValueProperty="NamaBarang" Change=@(args => ProsesCariBarang(args))>
                     <Template>
                     @((context as uimBarang).NamaBarang)
                     </Template>
@@ -471,7 +471,7 @@
     public void ProsesCariBarang(object args) => _nm.NavigateTo("/counter");
     public void CariBarang_Enter(KeyboardEventArgs e)
     {
-        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        if (e.Code == "Enter" || e.Code == "NumpadEnter" || e.Key == "Enter")
         {
             _nm.NavigateTo("/counter");
         }
